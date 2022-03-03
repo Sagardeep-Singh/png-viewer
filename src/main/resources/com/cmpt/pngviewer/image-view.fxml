@@ -1,9 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
-<?import javafx.scene.layout.*?>
-<AnchorPane fx:id="anchorPane" minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.cmpt.pngviewer.ImageController">
-   <Canvas fx:id="canvas" height="400.0" width="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
-           AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
-</AnchorPane>
+<?import javafx.scene.chart.AreaChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane gridLinesVisible="true" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.cmpt.pngviewer.ImageController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <Canvas fx:id="canvas" height="500.0" width="800.0" />
+   <AreaChart fx:id="redChart" style="-fx-fill: #ff0000ff;" GridPane.columnIndex="1">
+     <xAxis>
+       <NumberAxis side="BOTTOM" />
+     </xAxis>
+     <yAxis>
+       <NumberAxis side="LEFT" />
+     </yAxis>
+   </AreaChart>
+   <AreaChart fx:id="greenChart" GridPane.columnIndex="1" GridPane.rowIndex="1">
+      <xAxis>
+         <NumberAxis side="BOTTOM" />
+      </xAxis>
+      <yAxis>
+         <NumberAxis side="LEFT" />
+      </yAxis>
+   </AreaChart>
+   <AreaChart fx:id="blueChart" GridPane.rowIndex="1">
+      <xAxis>
+         <NumberAxis side="BOTTOM" />
+      </xAxis>
+      <yAxis>
+         <NumberAxis side="LEFT" />
+      </yAxis>
+   </AreaChart>
+</GridPane>
