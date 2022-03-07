@@ -1,6 +1,7 @@
 package com.cmpt.pngviewer;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -103,5 +104,9 @@ public class DitherController {
 
     private double getPaletteColor(double v, double t) {
         return v > t ? 1 : 0;
+    }
+
+    public void onExitClick(ActionEvent actionEvent) {
+        App.exit();
     }
 }

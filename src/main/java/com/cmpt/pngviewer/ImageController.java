@@ -1,6 +1,7 @@
 package com.cmpt.pngviewer;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -58,8 +59,6 @@ public class ImageController {
 
                     double imageOffsetX = (canvas.getWidth() - width) / 2;
                     double imageOffsetY = (canvas.getHeight() - height) / 2;
-
-                    System.out.printf("%d %d\n", height, width);
 
                     int[] red = new int[COLOR_SIZE];
                     int[] green = new int[COLOR_SIZE];
@@ -124,5 +123,9 @@ public class ImageController {
                 }
             }
         });
+    }
+
+    public void onExitClick(ActionEvent actionEvent) {
+        App.exit();
     }
 }

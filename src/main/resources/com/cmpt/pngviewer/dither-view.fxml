@@ -11,6 +11,7 @@
             <buttons>
                 <Button mnemonicParsing="false" onAction="#onUploadClick" text="Upload"/>
                 <Button mnemonicParsing="false" onAction="#onHistogramClick" text="Histogram"/>
+                <Button mnemonicParsing="false" onAction="#onExitClick" text="Exit"/>
             </buttons>
             <padding>
                 <Insets left="5.0" right="5.0"/>
