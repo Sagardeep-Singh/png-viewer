@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.BorderPane?>
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.cmpt.pngviewer.DitherController">
+    <top>
+        <ButtonBar prefHeight="40.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <buttons>
+                <Button mnemonicParsing="false" onAction="#onUploadClick" text="Upload"/>
+                <Button mnemonicParsing="false" onAction="#onHistogramClick" text="Histogram"/>
+            </buttons>
+            <padding>
+                <Insets left="5.0" right="5.0"/>
+            </padding>
+        </ButtonBar>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.5" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+                   BorderPane.alignment="CENTER">
+            <TitledPane collapsible="false" contentDisplay="CENTER" maxHeight="1.7976931348623157E308"
+                        maxWidth="1.7976931348623157E308" text="Original Image" textAlignment="CENTER">
+                <Canvas fx:id="originalCanvas" height="600.0" width="710.0"/>
+            </TitledPane>
+            <TitledPane collapsible="false" contentDisplay="CENTER" maxHeight="1.7976931348623157E308"
+                        maxWidth="1.7976931348623157E308" text="Dithered Image" textAlignment="CENTER">
+                <Canvas fx:id="ditheredCanvas" height="600.0" width="710.0"/>
+            </TitledPane>
+        </SplitPane>
+    </center>
+</BorderPane>

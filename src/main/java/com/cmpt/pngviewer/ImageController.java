@@ -1,91 +1,128 @@
 package com.cmpt.pngviewer;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.application.Platform;
+import javafx.event.Event;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.chart.AreaChart;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelReader;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class ImageController {
+    public static final double OFFSET_X = 20;
+    public static final double OFFSET_Y = 275;
+    public static final double MARGIN_TOP = 25;
+    public static final double HISTOGRAM_HEIGHT = OFFSET_Y - MARGIN_TOP;
+    public static final int COLOR_SIZE = 255;
+    public static final double BAR_WIDTH = 1.75;
     @FXML
     Canvas canvas;
     @FXML
-    AreaChart<Number, Number> redChart;
-    @FXML
-    AreaChart<Number, Number> greenChart;
-    @FXML
-    AreaChart<Number, Number> blueChart;
+    AnchorPane redHistogram, greenHistogram, blueHistogram;
 
     public static void show() {
         App.setRoot("image-view");
     }
 
+    public void onUploadClick(Event event) {
+        Node node = (Node) event.getTarget();
+        App.uploadFile(node.getScene().getWindow());
+        initialize();
+    }
+
+    public void onDitherClick(Event event) {
+        DitherController.show();
+    }
+
     public void initialize() {
-        if (App.file != null && App.file.isFile() && App.file.exists()) {
-            Image image;
-            try {
-                image = new Image(new FileInputStream(App.file.getPath()));
-                PixelReader reader = image.getPixelReader();
+        Platform.runLater(() -> {
+            if (App.file != null && App.file.isFile() && App.file.exists()) {
+                Image image;
+                try {
+                    image = new Image(new FileInputStream(App.file.getPath()));
+                    PixelReader reader = image.getPixelReader();
 
-                GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
-                int height = (int) image.getHeight();
-                int width = (int) image.getWidth();
+                    int height = (int) image.getHeight();
+                    int width = (int) image.getWidth();
 
-                System.out.printf("%d %d\n", height, width);
+                    canvas.resize(width, height);
+                    GraphicsContext graphicsContext2D = canvas.getGraphicsContext2D();
+                    graphicsContext2D.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-                int[] red = new int[255];
-                int[] green = new int[255];
-                int[] blue = new int[255];
+                    double imageOffsetX = (canvas.getWidth() - width) / 2;
+                    double imageOffsetY = (canvas.getHeight() - height) / 2;
 
-                for (int i = 0; i < width; i++) {
-                    for (int j = 0; j < height; j++) {
-                        Color color = reader.getColor(i, j);
+                    System.out.printf("%d %d\n", height, width);
 
-                        red[(int) Math.floor(color.getRed() * 255)]++;
-                        green[(int) Math.floor(color.getGreen() * 255)]++;
-                        blue[(int) Math.floor(color.getBlue() * 255)]++;
+                    int[] red = new int[COLOR_SIZE];
+                    int[] green = new int[COLOR_SIZE];
+                    int[] blue = new int[COLOR_SIZE];
 
-                        System.out.printf("R:%f G:%f B:%f\n", color.getRed(), color.getGreen(), color.getBlue());
-                        graphicsContext2D.setFill(color);
-                        graphicsContext2D.fillRect(i, j, 1, 1);
+                    for (int i = 0; i < width; i++) {
+                        for (int j = 0; j < height; j++) {
+                            Color color = reader.getColor(i, j);
+
+                            red[(int) Math.floor(color.getRed() * (COLOR_SIZE - 1))]++;
+                            green[(int) Math.floor(color.getGreen() * (COLOR_SIZE - 1))]++;
+                            blue[(int) Math.floor(color.getBlue() * (COLOR_SIZE - 1))]++;
+
+                            graphicsContext2D.setFill(color);
+                            graphicsContext2D.fillRect(imageOffsetX + i, imageOffsetY + j, 1, 1);
+                        }
                     }
+
+                    int maxRed = 0, maxGreen = 0, maxBlue = 0;
+                    for (int i = 0; i < COLOR_SIZE; i++) {
+                        maxRed = Math.max(maxRed, red[i]);
+                        maxGreen = Math.max(maxGreen, green[i]);
+                        maxBlue = Math.max(maxBlue, blue[i]);
+                    }
+
+                    redHistogram.getChildren().clear();
+                    greenHistogram.getChildren().clear();
+                    blueHistogram.getChildren().clear();
+
+                    for (int i = 0; i < COLOR_SIZE; i++) {
+                        double x = OFFSET_X + (i * BAR_WIDTH);
+                        Line redLine = new Line(x,
+                                OFFSET_Y,
+                                x,
+                                MARGIN_TOP + (HISTOGRAM_HEIGHT * (1 - (red[i] / (double) maxRed))));
+                        redLine.setStrokeWidth(BAR_WIDTH);
+                        redLine.setStroke(Color.RED);
+
+                        Line greenLine = new Line(x,
+                                OFFSET_Y,
+                                x,
+                                MARGIN_TOP + (HISTOGRAM_HEIGHT * (1 - (green[i] / (double) maxGreen))));
+                        greenLine.setStrokeWidth(BAR_WIDTH);
+                        greenLine.setStroke(Color.GREEN);
+
+                        Line blueLine = new Line(x,
+                                OFFSET_Y,
+                                x,
+                                MARGIN_TOP + (HISTOGRAM_HEIGHT * (1 - (blue[i] / (double) maxBlue))));
+                        blueLine.setStrokeWidth(BAR_WIDTH);
+                        blueLine.setStroke(Color.BLUE);
+
+                        Platform.runLater(()->{
+                            redHistogram.getChildren().add(redLine);
+                            greenHistogram.getChildren().add(greenLine);
+                            blueHistogram.getChildren().add(blueLine);
+                        });
+                    }
+
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
                 }
-
-                ObservableList<XYChart.Series<Number, Number>> redSeries = FXCollections.observableArrayList();
-                ObservableList<XYChart.Series<Number, Number>> blueSeries = FXCollections.observableArrayList();
-                ObservableList<XYChart.Series<Number, Number>> greenSeries = FXCollections.observableArrayList();
-
-                ObservableList<XYChart.Data<Number, Number>> redData = FXCollections.observableArrayList();
-                ObservableList<XYChart.Data<Number, Number>> blueData = FXCollections.observableArrayList();
-                ObservableList<XYChart.Data<Number, Number>> greenData = FXCollections.observableArrayList();
-
-                for (int i = 0; i < 255; i++) {
-                    redData.add(new XYChart.Data<>(i, red[i]));
-                    blueData.add(new XYChart.Data<>(i, blue[i]));
-                    greenData.add(new XYChart.Data<>(i, green[i]));
-                }
-
-                redSeries.add(new XYChart.Series<>(redData));
-                blueSeries.add(new XYChart.Series<>(blueData));
-                greenSeries.add(new XYChart.Series<>(greenData));
-
-                redChart.setData(redSeries);
-                blueChart.setData(blueSeries);
-                greenChart.setData(greenSeries);
-
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
             }
-
-        }
+        });
     }
 }

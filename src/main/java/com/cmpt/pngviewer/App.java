@@ -5,7 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.FileChooser;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +23,20 @@ public class App extends Application {
 
     @Override
     public void start(Stage stage) {
-        scene = new Scene(Objects.requireNonNull(loadFXML("upload-view")), 640, 480);
+        uploadFile(stage);
+        scene = new Scene(Objects.requireNonNull(loadFXML("image-view")), Screen.getPrimary().getBounds().getWidth(), Screen.getPrimary().getBounds().getHeight());
         stage.setScene(scene);
-        stage.show();    }
+        stage.show();
+    }
+
+    public static void uploadFile(Window stage) {
+        FileChooser fileChooser = new FileChooser();
+        try {
+            App.file = fileChooser.showOpenDialog(stage);
+        } catch (RuntimeException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
     static void setRoot(String fxml) {
         Parent parent = loadFXML(fxml);
